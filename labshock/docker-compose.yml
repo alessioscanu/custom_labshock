@@ -35,7 +35,7 @@ services:
       - '1881:1881'
     volumes:
       - scada-data:/usr/src/app/FUXA/server/_appdata
-      
+
   plc:
     build: ./plc/
     restart: unless-stopped
@@ -82,7 +82,16 @@ services:
     restart: unless-stopped
     environment:
       - TZ=America/New_York
-      
+  suricata:
+    image: jasonish/suricata:latest
+    container_name: suricata
+    network_mode: "host"
+    volumes:
+      - ./suricata/config:/etc/suricata
+      - ./suricata/logs:/var/log/suricata
+    command: suricata -c /etc/suricata/suricata.yaml -i any
+    restart: unless-stopped
+
   collector:
     build: ./collector/
     networks:
@@ -101,5 +110,5 @@ services:
 
 volumes:
   scada-data:
-  plc-data:    
+  plc-data:
   ews-data:
