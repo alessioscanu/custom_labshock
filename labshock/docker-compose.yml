@@ -83,6 +83,19 @@ services:
     environment:
       - TZ=America/New_York
 
+  suricata:
+    image: jasonish/suricata:latest
+    container_name: suricata
+    network_mode: host # required for Suricata to access network interfaces directly
+    cap_add:
+      - NET_ADMIN # allow Suricata to monitor network traffic
+      - NET_RAW
+    volumes:
+      - ./suricata/etc:/etc/suricata # your Suricata config files
+      - ./suricata/log:/var/log/suricata # where Suricata writes logs
+    command: -i eth0 # adjust 'eth0' to your host interface
+    restart: unless-stopped
+
   collector:
     build: ./collector/
     networks:
