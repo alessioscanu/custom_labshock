@@ -13,6 +13,13 @@ networks:
         - subnet: 192.168.3.0/24
 
 services:
+  portal:
+    build: ./portal/
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - portal-data:/app/config/
+
   router:
     build: ./router/
     privileged: true
@@ -75,6 +82,8 @@ services:
     ports:
       - "2222:22"
       - "3443:3443"
+    depends_on:
+      - portal
 
   ids:
     build: ./ids/
@@ -82,20 +91,9 @@ services:
     restart: unless-stopped
     environment:
       - TZ=America/New_York
-
-  suricata:
-    image: jasonish/suricata:latest
-    container_name: suricata
-    network_mode: host # required for Suricata to access network interfaces directly
-    cap_add:
-      - NET_ADMIN # allow Suricata to monitor network traffic
-      - NET_RAW
-    volumes:
-      - ./suricata/etc:/etc/suricata # your Suricata config files
-      - ./suricata/log:/var/log/suricata # where Suricata writes logs
-    command: -i eth0 # adjust 'eth0' to your host interface
-    restart: unless-stopped
-
+    depends_on:
+      - portal
+      
   collector:
     build: ./collector/
     networks:
@@ -105,14 +103,11 @@ services:
     ports:
       - "2443:2443"
       - "8766:8766"
-
-  portal:
-    build: ./portal/
-    restart: unless-stopped
-    ports:
-      - "443:443"
+    depends_on:
+      - portal
 
 volumes:
   scada-data:
   plc-data:
   ews-data:
+  portal-data:
