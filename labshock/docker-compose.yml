@@ -88,7 +88,7 @@ services:
   ids:
     image: zeek/zeek:latest
     network_mode: host
-    command: bash -c "zeek -i any"
+    command: bash -c "mkdir -p /home/log_files && cd /home/log_files && zeek -i any" # custom log files path
 
   collector:
     build: ./collector/
