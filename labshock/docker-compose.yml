@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 networks:
   l2_network:
@@ -39,7 +39,7 @@ services:
       l3_network:
         ipv4_address: 192.168.3.20
     ports:
-      - '1881:1881'
+      - "1881:1881"
     volumes:
       - scada-data:/usr/src/app/FUXA/server/_appdata
 
@@ -86,14 +86,10 @@ services:
       - portal
 
   ids:
-    build: ./ids/
+    image: zeek/zeek:latest
     network_mode: host
-    restart: unless-stopped
-    environment:
-      - TZ=America/New_York
-    depends_on:
-      - portal
-      
+    command: bash -c "zeek -i any"
+
   collector:
     build: ./collector/
     networks:
